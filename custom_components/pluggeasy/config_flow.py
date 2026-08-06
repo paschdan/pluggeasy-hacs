@@ -272,4 +272,7 @@ class PluggeasyFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             device = Pluggeasy(unit)
             await device.async_update()
         finally:
-            connection.close()
+            # ModbusConnection.close() is a coroutine and MUST be awaited;
+            # a bare call leaves the coroutine un-awaited and the socket dangling,
+            # which previously surfaced as a spurious "cannot_connect".
+            await connection.close()
