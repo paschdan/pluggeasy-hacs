@@ -268,6 +268,10 @@ class PluggeasyFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             message_spacing=0.03,
         )
         try:
+            # modbus-connection (stable) does not auto-connect on the first read;
+            # the connection must be established explicitly before borrowing a unit,
+            # otherwise reads raise "connection is not established".
+            await connection.connect()
             unit = connection.for_unit(int(data[CONF_UNIT_ID]))
             device = Pluggeasy(unit)
             await device.async_update()
