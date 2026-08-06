@@ -2,15 +2,48 @@
     "config": {
         "step": {
             "user": {
-                "description": "Configure the connection to your Pluggeasy ventilation unit.",
+                "title": "Choose connection type",
+                "description": "Select how your Pluggeasy unit is connected.",
+                "menu_options": {
+                    "tcp": "TCP / Ethernet",
+                    "serial": "Serial (RS-485)"
+                }
+            },
+            "tcp": {
+                "title": "TCP connection",
+                "description": "Configure the TCP connection to your Pluggeasy unit.",
                 "data": {
                     "host": "Host",
                     "port": "Port",
+                    "framer": "Framer",
                     "unit_id": "Unit ID"
                 },
                 "data_description": {
-                    "host": "IP address or hostname of the Pluggeasy unit.",
-                    "port": "Modbus TCP port (default 8899).",
+                    "host": "IP address or hostname of the Pluggeasy unit or gateway.",
+                    "port": "Modbus TCP port (default 8899 for TCP-to-serial gateways; 502 for native TCP).",
+                    "framer": "Modbus framer: 'socket' for native Modbus TCP, 'rtu' for RTU-over-TCP gateways.",
+                    "unit_id": "Modbus station address / slave ID (default 1)."
+                }
+            },
+            "serial": {
+                "title": "Serial connection",
+                "description": "Configure the RS-485 serial connection to your Pluggeasy unit.",
+                "data": {
+                    "device": "Serial device",
+                    "baudrate": "Baud rate",
+                    "parity": "Parity",
+                    "bytesize": "Data bits",
+                    "stopbits": "Stop bits",
+                    "framer": "Framer",
+                    "unit_id": "Unit ID"
+                },
+                "data_description": {
+                    "device": "Serial port path, e.g. /dev/ttyUSB0.",
+                    "baudrate": "Baud rate (default 19200 per Pluggeasy datasheet).",
+                    "parity": "Parity: None (N), Even (E), or Odd (O). Default: Even.",
+                    "bytesize": "Number of data bits (default 8).",
+                    "stopbits": "Number of stop bits (default 1).",
+                    "framer": "Modbus framer: 'rtu' (default) or 'ascii'.",
                     "unit_id": "Modbus station address / slave ID (default 1)."
                 }
             }

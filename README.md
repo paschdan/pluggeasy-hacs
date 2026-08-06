@@ -43,6 +43,26 @@ File | Purpose
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
 
+## Breaking changes in 0.3.0
+
+### Connection-type selector
+
+Version 0.3.0 adds a **connection-type / framer selector** to the config flow. When adding a new entry you now choose between:
+
+| Transport | Framer | Description |
+| :--- | :--- | :--- |
+| TCP | **Socket** *(default)* | Native Modbus TCP — matches a classic `modbus: type: tcp` YAML config. **Use this if your device connects directly over TCP.** |
+| TCP | RTU | RTU-over-TCP (legacy gateway mode) |
+| TCP | ASCII | ASCII-over-TCP |
+| Serial | RTU *(default)* | RS-485 serial, RTU framing |
+| Serial | ASCII | RS-485 serial, ASCII framing |
+
+**Serial defaults** (from the Pluggeasy datasheet): 19200 baud, 8 data bits, EVEN parity, 1 stop bit.
+
+**Existing entries keep working** — entries created with v0.2.0 (which lacked a connection-type field) are treated as TCP + Socket on load. This is a safe migration: the old hardcoded framer was `rtu`, but the only reported issue was "cannot connect" caused by that mismatch; Socket is the correct default for native TCP devices.
+
+> **"Cannot connect" fix**: If you were unable to add the integration because of a connection error, choose **TCP → Socket** (the new default). This matches native Modbus TCP, the same protocol used by `modbus: type: tcp` in classic HA YAML.
+
 ## Breaking changes in 0.2.0
 
 > **Users upgrading from 0.1.0 must update any automations referencing the old entity IDs.**

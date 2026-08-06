@@ -8,9 +8,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.const import Platform
-from modbus_connection.tmodbus import ModbusConnection, ModbusTcpParams
+from modbus_connection.tmodbus import ModbusConnection
 
-from .const import CONF_HOST, CONF_PORT, CONF_UNIT_ID
+from ._params import build_params
+from .const import CONF_UNIT_ID
 from .coordinator import PluggeasyCoordinator
 from .data import PluggeasyData
 from .vendor.pluggeasy_modbus import Pluggeasy
@@ -35,20 +36,10 @@ async def async_setup_entry(
     entry: PluggeasyConfigEntry,
 ) -> bool:
     """Set up Pluggeasy from a config entry."""
-    host: str = entry.data[CONF_HOST]
-    port: int = int(entry.data[CONF_PORT])
-    unit_id: int = int(entry.data[CONF_UNIT_ID])
-
-    connection = ModbusConnection(
-        # The Pluggeasy TCP-to-serial gateway speaks RTU-over-TCP, so the framer
-        # is fixed to "rtu". If a future gateway uses native Modbus TCP instead,
-        # change this to "socket" (there is no runtime auto-detection).
-        ModbusTcpParams(host=host, port=port, framer="rtu"),
-        message_spacing=0.03,
-    )
+    connection = ModbusConnection(build_params(entry.data), message_spacing=0.03)
     entry.async_on_unload(connection.close)
 
-    unit = connection.for_unit(unit_id)
+    unit = connection.for_unit(int(entry.data[CONF_UNIT_ID]))
     device = Pluggeasy(unit)
 
     coordinator = PluggeasyCoordinator(hass, entry, device)
