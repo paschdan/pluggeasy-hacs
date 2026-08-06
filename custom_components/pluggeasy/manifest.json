@@ -1,0 +1,15 @@
+{
+  "domain": "pluggeasy",
+  "name": "Pluggeasy",
+  "codeowners": [
+    "@paschdan"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/paschdan/pluggeasy-hacs",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/paschdan/pluggeasy-hacs/issues",
+  "requirements": [
+    "modbus-connection[tmodbus]>=3.6"
+  ],
+  "version": "0.1.0"
+}

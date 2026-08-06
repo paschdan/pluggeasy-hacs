@@ -1,0 +1,25 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "description": "Configure the connection to your Pluggeasy ventilation unit.",
+                "data": {
+                    "host": "Host",
+                    "port": "Port",
+                    "unit_id": "Unit ID"
+                },
+                "data_description": {
+                    "host": "IP address or hostname of the Pluggeasy unit.",
+                    "port": "Modbus TCP port (default 8899).",
+                    "unit_id": "Modbus station address / slave ID (default 1)."
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Unable to connect to the Pluggeasy unit. Check host, port, and unit ID."
+        },
+        "abort": {
+            "already_configured": "This Pluggeasy unit is already configured."
+        }
+    }
+}
