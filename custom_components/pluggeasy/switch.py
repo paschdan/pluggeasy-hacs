@@ -38,13 +38,11 @@ def _switch(attribute: str, name: str) -> PluggeasySwitchDescription:
 
 
 DESCRIPTIONS: tuple[PluggeasySwitchDescription, ...] = (
-    _switch("reset_filter_alarm", "Reset Filter Alarm"),
     _switch("manual_bypass", "Manual Bypass"),
     _switch("allow_automatic_bypass", "Allow Automatic Bypass"),
     _switch("summer_mode", "Summer Mode"),
     _switch("manual_boost", "Manual Boost"),
     _switch("snooze_mode", "Snooze Mode"),
-    _switch("working_mode_coil", "Working Mode"),
 )
 
 

@@ -12,15 +12,27 @@ objects::
 """
 
 from .controls import PluggeasyControls
+from .enums import (
+    ActualWorkingMode,
+    BypassDamperPosition,
+    CommunicationError,
+    DefrostStatus,
+    SelectedAirflow,
+)
 from .measurements import PluggeasyMeasurements
 from .parameters import PluggeasyParameters
 from .pluggeasy import Pluggeasy
 from .status import PluggeasyStatus
 
 __all__ = [
+    "ActualWorkingMode",
+    "BypassDamperPosition",
+    "CommunicationError",
+    "DefrostStatus",
     "Pluggeasy",
     "PluggeasyControls",
     "PluggeasyMeasurements",
     "PluggeasyParameters",
     "PluggeasyStatus",
+    "SelectedAirflow",
 ]

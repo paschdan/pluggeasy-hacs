@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
@@ -23,6 +24,12 @@ from homeassistant.const import (
 )
 
 from .entity import PluggeasyEntity
+from .vendor.pluggeasy_modbus import (
+    ActualWorkingMode,
+    BypassDamperPosition,
+    CommunicationError,
+    DefrostStatus,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -38,6 +45,7 @@ class PluggeasySensorDescription(SensorEntityDescription):
 
     component: str
     attribute: str
+    is_enum: bool = False
 
 
 def _temp(
@@ -116,11 +124,31 @@ def _diag(
     )
 
 
+def _enum_sensor(
+    component: str,
+    attribute: str,
+    name: str,
+    enum_class: type[IntEnum],
+) -> PluggeasySensorDescription:
+    return PluggeasySensorDescription(
+        key=f"{component}_{attribute}",
+        name=name,
+        component=component,
+        attribute=attribute,
+        device_class=SensorDeviceClass.ENUM,
+        options=[m.name.lower() for m in enum_class],
+        entity_category=EntityCategory.DIAGNOSTIC,
+        is_enum=True,
+    )
+
+
 DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
     # --- Component 3: PluggeasyMeasurements (input registers) ---
-    # Diagnostic integers
-    _diag("measurements", "communication_error", "Communication Error"),
-    _diag("measurements", "defrost_status", "Defrost Status"),
+    # Diagnostic enum sensors
+    _enum_sensor(
+        "measurements", "communication_error", "Communication Error", CommunicationError
+    ),
+    _enum_sensor("measurements", "defrost_status", "Defrost Status", DefrostStatus),
     # Temperatures (gauge, precision 1)
     _temp("measurements", "extract_air_temperature", "Extract Air Temperature"),
     _temp("measurements", "exhaust_air_temperature", "Exhaust Air Temperature"),
@@ -137,8 +165,13 @@ DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
     # RPM
     _rpm("rpm_extract_motor", "RPM Extract Motor"),
     _rpm("rpm_supply_motor", "RPM Supply Motor"),
-    # Diagnostic integer
-    _diag("measurements", "bypass_damper_position", "Bypass Damper Position"),
+    # Diagnostic enum sensor
+    _enum_sensor(
+        "measurements",
+        "bypass_damper_position",
+        "Bypass Damper Position",
+        BypassDamperPosition,
+    ),
     # VOC
     PluggeasySensorDescription(
         key="measurements_voc",
@@ -149,8 +182,10 @@ DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
         native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    # Diagnostic integer
-    _diag("measurements", "actual_working_mode", "Actual Working Mode"),
+    # Diagnostic enum sensor
+    _enum_sensor(
+        "measurements", "actual_working_mode", "Actual Working Mode", ActualWorkingMode
+    ),
     # --- Component 4: PluggeasyParameters (holding registers) ---
     # Temperatures (gauge, precision 1)
     _temp("parameters", "bypass_min_outdoor_temp", "Bypass Min Outdoor Temperature"),
@@ -161,7 +196,6 @@ DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
         "Bypass Min Extract-Outdoor Difference",
     ),
     # Plain integers
-    _diag("parameters", "selected_airflow", "Selected Airflow"),
     _diag("parameters", "manual_bypass_timer", "Manual By-Pass Timer"),
     _diag("parameters", "modbus_slave_address", "Modbus Slave Address"),
     _diag("parameters", "modbus_baudrate", "Modbus Baudrate"),
@@ -198,4 +232,10 @@ class PluggeasySensor(PluggeasyEntity, SensorEntity):
     @property
     def native_value(self) -> object:
         """Return the current sensor value."""
-        return getattr(self._subsystem, self.entity_description.attribute)
+        value = getattr(self._subsystem, self.entity_description.attribute)
+        if self.entity_description.is_enum:
+            if value is None:
+                return None
+            if isinstance(value, IntEnum):
+                return value.name.lower()
+        return value

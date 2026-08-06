@@ -23,8 +23,10 @@ if TYPE_CHECKING:
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
-    Platform.SWITCH,
+    Platform.BUTTON,
+    Platform.FAN,
     Platform.SENSOR,
+    Platform.SWITCH,
 ]
 
 

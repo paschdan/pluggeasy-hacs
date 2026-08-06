@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from modbus_connection.model import Component, ComponentGroup
 
 from .controls import PluggeasyControls
+from .enums import SelectedAirflow
 from .measurements import PluggeasyMeasurements
 from .parameters import PluggeasyParameters
 from .status import PluggeasyStatus
@@ -37,3 +38,15 @@ class Pluggeasy:
     async def async_update(self) -> None:
         """Refresh all components in pooled Modbus reads."""
         await self._group.async_update()
+
+    async def async_set_airflow(self, mode: SelectedAirflow) -> None:
+        """Set the ventilation airflow mode (holding register 40133)."""
+        await self.parameters.write("selected_airflow", mode)
+
+    async def async_set_boost(self, on: bool) -> None:
+        """Enable or disable boost mode via the manual_boost coil (CL17)."""
+        await self.controls.write("manual_boost", on)
+
+    async def async_reset_filter_alarm(self) -> None:
+        """Reset the filter alarm by momentarily writing the reset coil (CL1)."""
+        await self.controls.write("reset_filter_alarm", True)

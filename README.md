@@ -16,7 +16,7 @@ File | Purpose
 `.github/renovate.json` | Dependency update configuration for Renovate
 `.github/ISSUE_TEMPLATE/*.yml` | Issue tracker templates
 `custom_components/pluggeasy/` | Integration files
-`custom_components/pluggeasy/vendor/` | Vendored `pluggeasy_modbus` device library
+`custom_components/pluggeasy/vendor/` | Vendored `pluggeasy_modbus` device library (v0.2.0)
 `scripts/vendor.sh` | Refresh the vendored library from the upstream repo
 `CONTRIBUTING.md` | Contribution guidelines
 `LICENSE` | MIT License
@@ -27,9 +27,13 @@ File | Purpose
 
 ## Data provided
 
-- **11 binary sensors** — alarms, faults, bypass/boost status
-- **25 sensors** — temperatures, humidity, motor voltages/RPM, VOC, working mode, parameters
-- **7 switches** — filter reset, bypass, summer mode, boost, snooze, working mode
+| Platform | Count | Description |
+| :--- | :---: | :--- |
+| `binary_sensor` | 11 | Alarms, sensor faults, fan faults, bypass/boost status |
+| `sensor` | 24 | Air temperatures, humidity, motor voltages/RPM, VOC, enum status sensors (actual working mode, defrost status, communication error, bypass damper position), parameters |
+| `switch` | 5 | Bypass, summer mode, boost, snooze, allow automatic bypass |
+| `fan` | 1 | Ventilation speed (presets: low / medium / nominal / auto / snooze) |
+| `button` | 1 | Reset filter alarm |
 
 ## Installation
 
@@ -38,6 +42,19 @@ File | Purpose
 3. Install **Pluggeasy** from HACS.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
+
+## Breaking changes in 0.2.0
+
+> **Users upgrading from 0.1.0 must update any automations referencing the old entity IDs.**
+
+| Change | Old entity_id suffix | New entity_id suffix / replacement |
+| :--- | :--- | :--- |
+| Boost binary sensor renamed + inverted | `boost_mode_active` | `boost_active` (value now correct: `on` = boost running) |
+| Speed control replaced by fan entity | `selected_airflow` sensor | `fan.pluggeasy` (preset modes) |
+| Working mode switch removed | `working_mode` switch | Folded into fan entity (Auto preset) |
+| Filter reset switch replaced by button | `reset_filter_alarm` switch | `button.pluggeasy_reset_filter_alarm` |
+
+**Unchanged switches**: `manual_bypass`, `allow_automatic_bypass`, `summer_mode`, `manual_boost`, `snooze_mode`.
 
 ## Development
 
@@ -57,4 +74,4 @@ scripts/vendor.sh
 
 ## Device library
 
-The `pluggeasy_modbus` device library is vendored under `custom_components/pluggeasy/vendor/`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus) for the upstream source.
+The `pluggeasy_modbus` device library (v0.2.0) is vendored under `custom_components/pluggeasy/vendor/`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus) for the upstream source.

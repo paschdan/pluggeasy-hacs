@@ -21,5 +21,73 @@
         "abort": {
             "already_configured": "This Pluggeasy unit is already configured."
         }
+    },
+    "entity": {
+        "button": {
+            "controls_reset_filter_alarm": {
+                "name": "Reset Filter Alarm"
+            }
+        },
+        "fan": {
+            "parameters_selected_airflow": {
+                "name": "Pluggeasy",
+                "state_attributes": {
+                    "preset_mode": {
+                        "state": {
+                            "low": "Low",
+                            "medium": "Medium",
+                            "nominal": "Nominal",
+                            "auto": "Auto",
+                            "snooze": "Snooze"
+                        }
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "measurements_actual_working_mode": {
+                "name": "Actual Working Mode",
+                "state": {
+                    "snooze": "Snooze",
+                    "low": "Low",
+                    "medium": "Medium",
+                    "high": "High",
+                    "boost": "Boost",
+                    "auto_humidity": "Auto (Humidity)",
+                    "auto_voc": "Auto (VOC)",
+                    "auto_0_10v": "Auto (0-10 V)",
+                    "boost_in_auto": "Boost in Auto",
+                    "weekly_1": "Weekly 1",
+                    "weekly_2": "Weekly 2",
+                    "weekly_3": "Weekly 3",
+                    "weekly_4": "Weekly 4"
+                }
+            },
+            "measurements_defrost_status": {
+                "name": "Defrost Status",
+                "state": {
+                    "not_active": "Not Active",
+                    "fireplace_defrost": "Fireplace Defrost",
+                    "pre_heater": "Pre-Heater",
+                    "unbalanced_airflows": "Unbalanced Airflows"
+                }
+            },
+            "measurements_communication_error": {
+                "name": "Communication Error",
+                "state": {
+                    "no_error": "No Error",
+                    "remote_controller": "Remote Controller",
+                    "modbus_rtu": "Modbus RTU"
+                }
+            },
+            "measurements_bypass_damper_position": {
+                "name": "Bypass Damper Position",
+                "state": {
+                    "closed": "Closed",
+                    "open": "Open",
+                    "error": "Error"
+                }
+            }
+        }
     }
 }

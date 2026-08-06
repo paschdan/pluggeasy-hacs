@@ -92,8 +92,8 @@ DESCRIPTIONS: tuple[PluggeasyBinaryDescription, ...] = (
         BinarySensorDeviceClass.RUNNING,
     ),
     _binary(
-        "boost_mode_active",
-        "Boost Mode Active",
+        "boost_active",
+        "Boost Active",
         BinarySensorDeviceClass.RUNNING,
     ),
 )

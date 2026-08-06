@@ -3,7 +3,7 @@
 ## pluggeasy_modbus
 
 - **Source**: https://github.com/paschdan/pluggeasy-modbus
-- **Version**: 0.1.0
+- **Version**: 0.2.0 (enums.py + writable selected_airflow + boost_active inversion fix)
 - **Vendored path**: `pluggeasy_modbus/`
 
 ### Provenance

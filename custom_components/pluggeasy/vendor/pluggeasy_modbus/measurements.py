@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from modbus_connection.model import Component, gauge, integer
+from modbus_connection.model import Component, enum, gauge, integer
+
+from .enums import (
+    ActualWorkingMode,
+    BypassDamperPosition,
+    CommunicationError,
+    DefrostStatus,
+)
 
 
 class PluggeasyMeasurements(Component):
@@ -10,8 +17,8 @@ class PluggeasyMeasurements(Component):
 
     register_space = "input"
 
-    communication_error = integer(4, signed=True)
-    defrost_status = integer(5, signed=True)
+    communication_error = enum(4, CommunicationError)
+    defrost_status = enum(5, DefrostStatus)
     extract_air_temperature = gauge(25, 0.1, unit="°C")
     exhaust_air_temperature = gauge(26, 0.1, unit="°C")
     outdoor_air_temperature = gauge(27, 0.1, unit="°C")
@@ -24,6 +31,6 @@ class PluggeasyMeasurements(Component):
     voltage_supply_motor = gauge(60, 0.1, unit="V")
     rpm_extract_motor = integer(61, signed=True, unit="rpm")
     rpm_supply_motor = integer(62, signed=True, unit="rpm")
-    bypass_damper_position = integer(63, signed=True)
+    bypass_damper_position = enum(63, BypassDamperPosition)
     voc = integer(81, signed=True, unit="ppm")
-    actual_working_mode = integer(90, signed=True)
+    actual_working_mode = enum(90, ActualWorkingMode)
