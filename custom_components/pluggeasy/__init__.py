@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from homeassistant.const import Platform
 from homeassistant.exceptions import ConfigEntryNotReady
 from modbus_connection import ModbusError
-from modbus_connection.tmodbus import ModbusConnection
+from modbus_connection.pymodbus import ModbusConnection
 
 from ._params import build_params
 from .const import CONF_UNIT_ID

@@ -22,7 +22,7 @@ from homeassistant.helpers.selector import (
     TextSelectorType,
 )
 from modbus_connection import ModbusError
-from modbus_connection.tmodbus import ModbusConnection
+from modbus_connection.pymodbus import ModbusConnection
 
 from ._params import build_params
 from .const import (
