@@ -61,19 +61,15 @@
                 "name": "Reset Filter Alarm"
             }
         },
-        "fan": {
-            "parameters_selected_airflow": {
-                "name": "Pluggeasy",
-                "state_attributes": {
-                    "preset_mode": {
-                        "state": {
-                            "low": "Low",
-                            "medium": "Medium",
-                            "nominal": "Nominal",
-                            "auto": "Auto",
-                            "snooze": "Snooze"
-                        }
-                    }
+        "select": {
+            "ventilation_mode": {
+                "name": "Ventilation mode",
+                "state": {
+                    "low": "Low",
+                    "medium": "Medium",
+                    "nominal": "Nominal",
+                    "auto": "Auto",
+                    "snooze": "Snooze"
                 }
             }
         },

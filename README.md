@@ -32,7 +32,7 @@ File | Purpose
 | `binary_sensor` | 11 | Alarms, sensor faults, fan faults, bypass/boost status |
 | `sensor` | 24 | Air temperatures, humidity, motor voltages/RPM, VOC, enum status sensors (actual working mode, defrost status, communication error, bypass damper position), parameters |
 | `switch` | 5 | Bypass, summer mode, boost, snooze, allow automatic bypass |
-| `fan` | 1 | Ventilation speed (presets: low / medium / nominal / auto / snooze) |
+| `select` | 1 | Ventilation speed setpoint (`select.pluggeasy_ventilation_mode`): low / medium / nominal / auto / snooze |
 | `button` | 1 | Reset filter alarm |
 
 ## Installation
@@ -42,6 +42,18 @@ File | Purpose
 3. Install **Pluggeasy** from HACS.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
+
+## Breaking changes in 0.3.3
+
+### Ventilation speed is now a Select entity
+
+The `fan.pluggeasy` entity has been **removed**. Ventilation speed is now controlled via a **Select** entity:
+
+- **New entity**: `select.pluggeasy_ventilation_mode` — options: low / medium / nominal / auto / snooze
+- **Removed entity**: `fan.pluggeasy` (breaking: update any dashboards or automations that reference `fan.pluggeasy*`)
+- **Unchanged**: `sensor.pluggeasy_actual_working_mode` still shows the real running state from the device
+- **Optimistic updates**: selecting an option updates the UI immediately; the coordinator refresh confirms the live value
+- **Library pin**: `modbus-connection[tmodbus]` is now pinned to `>=3.9,<4`
 
 ## Breaking changes in 0.3.0
 

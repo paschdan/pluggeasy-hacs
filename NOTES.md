@@ -12,9 +12,9 @@
 
 | Artifact | Version | Notes |
 | :--- | :--- | :--- |
-| This HACS integration | `0.3.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
+| This HACS integration | `0.3.3` | `custom_components/pluggeasy/manifest.json` `version` field. |
 | Vendored `pluggeasy_modbus` | `0.2.0` | Copied from `pluggeasy-modbus` `0.2.0` release; lives at `custom_components/pluggeasy/vendor/pluggeasy_modbus/`. Refresh with `scripts/vendor.sh`. |
-| `modbus-connection[tmodbus]` | `>=3.6` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
+| `modbus-connection[tmodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
 
 ## Architecture note
@@ -32,6 +32,15 @@ Backward-compat: entries created before v0.3.0 (no `connection_type` key) defaul
 The `pluggeasy_modbus` device library is **vendored** (not listed in `requirements`) so it is always available offline. Only `modbus-connection[tmodbus]` (the transport layer) is a pip requirement.
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
+
+## What changed in 0.3.3
+
+- **`select.py`** (new) — `PluggeasyVentilationModeSelect` entity replaces the fan. Controls `parameters.selected_airflow` (the setpoint enum). Supports optimistic updates: state updates immediately on selection, then clears on the next coordinator refresh so the live value wins.
+- **`fan.py`** (deleted) — removed; `fan.pluggeasy` entity no longer exists. **Breaking**: update dashboards and automations to use `select.pluggeasy_ventilation_mode`.
+- **`__init__.py`** — `Platform.FAN` replaced with `Platform.SELECT` in `PLATFORMS`.
+- **`translations/en.json`** — `fan` block removed; `select.ventilation_mode` block added with state labels for all five options.
+- **`manifest.json`** — `requirements` pinned to `modbus-connection[tmodbus]>=3.9,<4`; version bumped to `0.3.3`.
+- **Unchanged**: `sensor.pluggeasy_actual_working_mode` still shows the real running state from the device.
 
 ## What changed in 0.3.0
 
