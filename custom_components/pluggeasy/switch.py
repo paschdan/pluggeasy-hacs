@@ -80,13 +80,15 @@ class PluggeasySwitch(PluggeasyEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs: Any) -> None:  # noqa: ARG002
         """Turn the switch on."""
         await self.coordinator.data.controls.write(  # type: ignore[union-attr]
-            self.entity_description.attribute, True  # noqa: FBT003
+            self.entity_description.attribute,
+            True,  # noqa: FBT003
         )
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:  # noqa: ARG002
         """Turn the switch off."""
         await self.coordinator.data.controls.write(  # type: ignore[union-attr]
-            self.entity_description.attribute, False  # noqa: FBT003
+            self.entity_description.attribute,
+            False,  # noqa: FBT003
         )
         await self.coordinator.async_request_refresh()
