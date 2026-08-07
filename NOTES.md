@@ -12,9 +12,9 @@
 
 | Artifact | Version | Notes |
 | :--- | :--- | :--- |
-| This HACS integration | `0.3.3` | `custom_components/pluggeasy/manifest.json` `version` field. |
+| This HACS integration | `0.4.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
 | Vendored `pluggeasy_modbus` | `0.2.0` | Copied from `pluggeasy-modbus` `0.2.0` release; lives at `custom_components/pluggeasy/vendor/pluggeasy_modbus/`. Refresh with `scripts/vendor.sh`. |
-| `modbus-connection[tmodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
+| `modbus-connection[pymodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
 
 ## Architecture note
@@ -32,6 +32,16 @@ Backward-compat: entries created before v0.3.0 (no `connection_type` key) defaul
 The `pluggeasy_modbus` device library is **vendored** (not listed in `requirements`) so it is always available offline. Only `modbus-connection[tmodbus]` (the transport layer) is a pip requirement.
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
+
+## What changed in 0.4.0
+
+- **`climate.py`** (new) — `PluggeasyClimate` entity: `HVACMode.FAN_ONLY`; fan modes `off` / `auto` / `low` / `medium` / `high` mapped to `SelectedAirflow` (off → Snooze, auto → Auto, low → Low, medium → Medium, high → Nominal); read-only supply-air temperature exposed as both `current_temperature` and `target_temperature` (no writable setpoint); `set_temperature` is a no-op. Coexists with `select.pluggeasy_ventilation_mode`.
+- **`sensor.py`** — 2 new air-level % sensors: `Supply Air Level` and `Return Air Level`. Stage approximation from `actual_working_mode`: snooze → 0 %, low → 33 %, medium → 66 %, high / boost / auto-variants → 66–100 %. Total: 26 sensors (was 24).
+- **`binary_sensor.py`** — 3 new computed binary sensors: `Bypass Valve` (on when bypass damper position is `open`), `Summer Mode` (mirrors `switch.pluggeasy_summer_mode`), `Preheat` (on when defrost pre-heater is active). Total: 14 binary sensors (was 11).
+- **`__init__.py`** — `Platform.CLIMATE` added to `PLATFORMS`.
+- **`translations/en.json`** — names added for all 5 new entities.
+- **`manifest.json`** — version bumped to `0.4.0`.
+- **lovelace-comfoair card**: the new entity set enables [TimWeyand/lovelace-comfoair](https://github.com/TimWeyand/lovelace-comfoair) to auto-detect entities from the device. The exhaust-fan RPM sensor is named `extract` (not `exhaust`), so set `fan_speed_exhaust: sensor.pluggeasy_rpm_extract_motor` explicitly in the card config; everything else auto-detects.
 
 ## What changed in 0.3.3
 

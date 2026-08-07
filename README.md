@@ -29,8 +29,9 @@ File | Purpose
 
 | Platform | Count | Description |
 | :--- | :---: | :--- |
-| `binary_sensor` | 11 | Alarms, sensor faults, fan faults, bypass/boost status |
-| `sensor` | 24 | Air temperatures, humidity, motor voltages/RPM, VOC, enum status sensors (actual working mode, defrost status, communication error, bypass damper position), parameters |
+| `climate` | 1 | `climate.pluggeasy_climate` — HVACMode.FAN_ONLY; fan modes: off / auto / low / medium / high (mapped to selected_airflow); read-only supply-air temperature shown as the climate temperature (no writable setpoint). Coexists with `select.pluggeasy_ventilation_mode`. |
+| `binary_sensor` | 14 | Alarms, sensor faults, fan faults, bypass/boost status; **new in 0.4.0**: Bypass Valve (open/closed), Summer Mode (mirrors the summer switch), Preheat (defrost pre-heater active) |
+| `sensor` | 26 | Air temperatures, humidity, motor voltages/RPM, VOC, enum status sensors (actual working mode, defrost status, communication error, bypass damper position), parameters; **new in 0.4.0**: Supply Air Level (%), Return Air Level (%) |
 | `switch` | 5 | Bypass, summer mode, boost, snooze, allow automatic bypass |
 | `select` | 1 | Ventilation speed setpoint (`select.pluggeasy_ventilation_mode`): low / medium / nominal / auto / snooze |
 | `button` | 1 | Reset filter alarm |
@@ -42,6 +43,45 @@ File | Purpose
 3. Install **Pluggeasy** from HACS.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
+
+## What's new in 0.4.0
+
+### Climate entity + lovelace-comfoair card support
+
+Version 0.4.0 adds a `climate` entity and a set of new sensors/binary_sensors that enable the [TimWeyand/lovelace-comfoair](https://github.com/TimWeyand/lovelace-comfoair) card to auto-detect entities from the Pluggeasy device.
+
+#### New: `climate.pluggeasy_climate`
+
+- **HVAC mode**: `FAN_ONLY` (a ventilation unit only ventilates — no heating/cooling setpoint).
+- **Fan modes**: `off` / `auto` / `low` / `medium` / `high` — mapped to `selected_airflow` (off → Snooze, auto → Auto, low → Low, medium → Medium, high → Nominal). Setting a fan mode writes the airflow setpoint; the ventilation-mode select (`select.pluggeasy_ventilation_mode`) continues to work alongside it.
+- **Temperature**: the read-only supply-air temperature is exposed as the climate `temperature` attribute (the big center number in the card). There is no writable setpoint — `set_temperature` is a no-op.
+
+#### New sensors (0.4.0)
+
+| Entity | Unit | Description |
+| :--- | :---: | :--- |
+| `sensor.pluggeasy_supply_air_level` | % | Supply fan stage approximation from `actual_working_mode`: snooze → 0 %, low → 33 %, medium → 66 %, high / boost / auto-variants → 66–100 % |
+| `sensor.pluggeasy_return_air_level` | % | Return fan stage approximation (same mapping) |
+
+#### New binary sensors (0.4.0)
+
+| Entity | Description |
+| :--- | :--- |
+| `binary_sensor.pluggeasy_bypass_valve` | `on` when the bypass damper position is `open` |
+| `binary_sensor.pluggeasy_summer_mode` | `on` when summer mode is active (mirrors `switch.pluggeasy_summer_mode`) |
+| `binary_sensor.pluggeasy_preheat` | `on` when the defrost pre-heater is active |
+
+#### lovelace-comfoair card setup
+
+Install [TimWeyand/lovelace-comfoair](https://github.com/TimWeyand/lovelace-comfoair) via HACS (Frontend / Dashboard category), then add a card:
+
+```yaml
+type: custom:comfoair-card
+entity: climate.pluggeasy_climate
+fan_speed_exhaust: sensor.pluggeasy_rpm_extract_motor
+```
+
+> **Note**: the exhaust-fan RPM sensor is named `extract` (not `exhaust`) in this integration, so `fan_speed_exhaust` must be set explicitly. All other entities are auto-detected from the device by the card.
 
 ## Breaking changes in 0.3.3
 

@@ -56,6 +56,11 @@
         }
     },
     "entity": {
+        "climate": {
+            "climate": {
+                "name": "Climate"
+            }
+        },
         "button": {
             "controls_reset_filter_alarm": {
                 "name": "Reset Filter Alarm"
@@ -116,6 +121,23 @@
                     "open": "Open",
                     "error": "Error"
                 }
+            },
+            "measurements_supply_air_level": {
+                "name": "Supply Air Level"
+            },
+            "measurements_return_air_level": {
+                "name": "Return Air Level"
+            }
+        },
+        "binary_sensor": {
+            "measurements_bypass_valve": {
+                "name": "Bypass Valve"
+            },
+            "controls_summer_mode": {
+                "name": "Summer Mode"
+            },
+            "measurements_preheat": {
+                "name": "Preheat"
             }
         }
     }

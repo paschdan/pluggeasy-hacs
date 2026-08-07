@@ -48,6 +48,24 @@ class PluggeasySensorDescription(SensorEntityDescription):
     is_enum: bool = False
 
 
+# Stage approximations: maps ActualWorkingMode -> fan-stage % (not true duty-%).
+_WORKING_MODE_TO_PERCENT: dict[ActualWorkingMode, int] = {
+    ActualWorkingMode.SNOOZE: 0,
+    ActualWorkingMode.LOW: 33,
+    ActualWorkingMode.MEDIUM: 66,
+    ActualWorkingMode.HIGH: 100,
+    ActualWorkingMode.BOOST: 100,
+    ActualWorkingMode.BOOST_IN_AUTO: 100,
+    ActualWorkingMode.AUTO_HUMIDITY: 66,
+    ActualWorkingMode.AUTO_VOC: 66,
+    ActualWorkingMode.AUTO_0_10V: 66,
+    ActualWorkingMode.WEEKLY_1: 66,
+    ActualWorkingMode.WEEKLY_2: 66,
+    ActualWorkingMode.WEEKLY_3: 66,
+    ActualWorkingMode.WEEKLY_4: 66,
+}
+
+
 def _temp(
     component: str,
     attribute: str,
@@ -186,6 +204,23 @@ DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
     _enum_sensor(
         "measurements", "actual_working_mode", "Actual Working Mode", ActualWorkingMode
     ),
+    # Air-level stage approximations (% derived from actual_working_mode enum)
+    PluggeasySensorDescription(
+        key="measurements_supply_air_level",
+        name="Supply Air Level",
+        component="measurements",
+        attribute="actual_working_mode",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PluggeasySensorDescription(
+        key="measurements_return_air_level",
+        name="Return Air Level",
+        component="measurements",
+        attribute="actual_working_mode",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
     # --- Component 4: PluggeasyParameters (holding registers) ---
     # Temperatures (gauge, precision 1)
     _temp("parameters", "bypass_min_outdoor_temp", "Bypass Min Outdoor Temperature"),
@@ -211,7 +246,11 @@ async def async_setup_entry(
     """Set up Pluggeasy sensors."""
     coordinator = entry.runtime_data.coordinator
     async_add_entities(
-        PluggeasySensor(coordinator, description) for description in DESCRIPTIONS
+        PluggeasyAirLevelSensor(coordinator, description)
+        if description.key
+        in {"measurements_supply_air_level", "measurements_return_air_level"}
+        else PluggeasySensor(coordinator, description)
+        for description in DESCRIPTIONS
     )
 
 
@@ -239,3 +278,15 @@ class PluggeasySensor(PluggeasyEntity, SensorEntity):
             if isinstance(value, IntEnum):
                 return value.name.lower()
         return value
+
+
+class PluggeasyAirLevelSensor(PluggeasySensor):
+    """Sensor that maps ActualWorkingMode to a fan-stage percentage approximation."""
+
+    @property
+    def native_value(self) -> int | None:
+        """Return stage-approximated fan % from actual_working_mode."""
+        value = getattr(self._subsystem, self.entity_description.attribute)
+        if value is None:
+            return None
+        return _WORKING_MODE_TO_PERCENT.get(value)

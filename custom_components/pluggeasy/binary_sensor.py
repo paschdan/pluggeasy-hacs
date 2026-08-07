@@ -16,6 +16,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.const import EntityCategory
 
 from .entity import PluggeasyEntity
+from .vendor.pluggeasy_modbus import BypassDamperPosition, DefrostStatus
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -96,6 +97,26 @@ DESCRIPTIONS: tuple[PluggeasyBinaryDescription, ...] = (
         "Boost Active",
         BinarySensorDeviceClass.RUNNING,
     ),
+    # Card auto-detect binary sensors (keyword-matched by erhv-lovelace card)
+    PluggeasyBinaryDescription(
+        key="measurements_bypass_valve",
+        name="Bypass Valve",
+        component="measurements",
+        attribute="bypass_damper_position",
+        device_class=BinarySensorDeviceClass.OPENING,
+    ),
+    PluggeasyBinaryDescription(
+        key="controls_summer_mode",
+        name="Summer Mode",
+        component="controls",
+        attribute="summer_mode",
+    ),
+    PluggeasyBinaryDescription(
+        key="measurements_preheat",
+        name="Preheat",
+        component="measurements",
+        attribute="defrost_status",
+    ),
 )
 
 
@@ -107,7 +128,11 @@ async def async_setup_entry(
     """Set up Pluggeasy binary sensors."""
     coordinator = entry.runtime_data.coordinator
     async_add_entities(
-        PluggeasyBinarySensor(coordinator, description) for description in DESCRIPTIONS
+        PluggeasyComputedBinarySensor(coordinator, description)
+        if description.key
+        in {"measurements_bypass_valve", "controls_summer_mode", "measurements_preheat"}
+        else PluggeasyBinarySensor(coordinator, description)
+        for description in DESCRIPTIONS
     )
 
 
@@ -129,3 +154,25 @@ class PluggeasyBinarySensor(PluggeasyEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         """Return true if the discrete input is set."""
         return getattr(self._subsystem, self.entity_description.attribute)  # type: ignore[return-value]
+
+
+class PluggeasyComputedBinarySensor(PluggeasyBinarySensor):
+    """Binary sensor whose is_on value is derived from an enum comparison."""
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return computed on/off state from the attribute value."""
+        key = self.entity_description.key
+        if key == "measurements_bypass_valve":
+            value = getattr(self._subsystem, self.entity_description.attribute)
+            if value is None:
+                return None
+            return value == BypassDamperPosition.OPEN
+        if key == "controls_summer_mode":
+            return getattr(self._subsystem, self.entity_description.attribute)
+        if key == "measurements_preheat":
+            value = getattr(self._subsystem, self.entity_description.attribute)
+            if value is None:
+                return False
+            return value == DefrostStatus.PRE_HEATER
+        return None
