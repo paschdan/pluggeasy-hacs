@@ -23,6 +23,7 @@ from homeassistant.helpers.selector import (
 )
 from modbus_connection import ModbusError
 from modbus_connection.pymodbus import ModbusConnection
+from pluggeasy_modbus import Pluggeasy
 
 from ._params import build_params
 from .const import (
@@ -47,7 +48,6 @@ from .const import (
     DOMAIN,
     LOGGER,
 )
-from .vendor.pluggeasy_modbus import Pluggeasy
 
 
 class PluggeasyFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

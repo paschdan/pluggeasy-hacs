@@ -11,12 +11,12 @@ from homeassistant.const import Platform
 from homeassistant.exceptions import ConfigEntryNotReady
 from modbus_connection import ModbusError
 from modbus_connection.pymodbus import ModbusConnection
+from pluggeasy_modbus import Pluggeasy
 
 from ._params import build_params
 from .const import CONF_UNIT_ID
 from .coordinator import PluggeasyCoordinator
 from .data import PluggeasyData
-from .vendor.pluggeasy_modbus import Pluggeasy
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry

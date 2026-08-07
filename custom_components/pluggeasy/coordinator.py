@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from modbus_connection import ModbusError
+from pluggeasy_modbus import Pluggeasy
 
 from .const import DOMAIN, LOGGER, SCAN_INTERVAL
-from .vendor.pluggeasy_modbus import Pluggeasy
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

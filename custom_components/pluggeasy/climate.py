@@ -19,9 +19,9 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.const import UnitOfTemperature
+from pluggeasy_modbus import SelectedAirflow
 
 from .entity import PluggeasyEntity
-from .vendor.pluggeasy_modbus import SelectedAirflow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

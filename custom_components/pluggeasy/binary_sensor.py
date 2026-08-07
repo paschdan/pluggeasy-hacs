@@ -14,9 +14,9 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.const import EntityCategory
+from pluggeasy_modbus import BypassDamperPosition, DefrostStatus
 
 from .entity import PluggeasyEntity
-from .vendor.pluggeasy_modbus import BypassDamperPosition, DefrostStatus
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

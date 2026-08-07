@@ -8,9 +8,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from homeassistant.components.select import SelectEntity
+from pluggeasy_modbus import SelectedAirflow
 
 from .entity import PluggeasyEntity
-from .vendor.pluggeasy_modbus import SelectedAirflow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

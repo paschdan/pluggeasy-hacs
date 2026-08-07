@@ -16,8 +16,6 @@ File | Purpose
 `.github/renovate.json` | Dependency update configuration for Renovate
 `.github/ISSUE_TEMPLATE/*.yml` | Issue tracker templates
 `custom_components/pluggeasy/` | Integration files
-`custom_components/pluggeasy/vendor/` | Vendored `pluggeasy_modbus` device library (v0.2.0)
-`scripts/vendor.sh` | Refresh the vendored library from the upstream repo
 `CONTRIBUTING.md` | Contribution guidelines
 `LICENSE` | MIT License
 `README.md` | This file
@@ -43,6 +41,14 @@ File | Purpose
 3. Install **Pluggeasy** from HACS.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
+
+## What's new in 0.5.0
+
+### Library now pip-installed from PyPI
+
+`pluggeasy_modbus` is no longer vendored. It is now declared as a pip requirement (`pluggeasy-modbus==0.2.0`) in `manifest.json` and installed by Home Assistant at runtime, consistent with the Core integration.
+
+**New maintenance flow**: change the library → release a new version to PyPI → bump the `pluggeasy-modbus==` pin in both Core and HACS manifests.
 
 ## What's new in 0.4.0
 
@@ -138,12 +144,8 @@ scripts/develop # start Home Assistant with the integration loaded
 scripts/lint    # run ruff format + check
 ```
 
-To refresh the vendored device library after upstream changes:
-
-```bash
-scripts/vendor.sh
-```
-
 ## Device library
 
-The `pluggeasy_modbus` device library (v0.2.0) is vendored under `custom_components/pluggeasy/vendor/`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus) for the upstream source.
+`pluggeasy_modbus` (v0.2.0) is pip-installed from PyPI at runtime via the `requirements` field in `manifest.json`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus) for the upstream source.
+
+**Maintenance flow**: change the library → release a new version to PyPI → bump the `pluggeasy-modbus==` pin in both Core (`pluggeasy-core`) and HACS (`pluggeasy-hacs`) manifests.

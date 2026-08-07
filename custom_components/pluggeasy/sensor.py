@@ -22,14 +22,14 @@ from homeassistant.const import (
     UnitOfElectricPotential,
     UnitOfTemperature,
 )
-
-from .entity import PluggeasyEntity
-from .vendor.pluggeasy_modbus import (
+from pluggeasy_modbus import (
     ActualWorkingMode,
     BypassDamperPosition,
     CommunicationError,
     DefrostStatus,
 )
+
+from .entity import PluggeasyEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

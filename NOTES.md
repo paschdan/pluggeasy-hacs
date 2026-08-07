@@ -12,8 +12,8 @@
 
 | Artifact | Version | Notes |
 | :--- | :--- | :--- |
-| This HACS integration | `0.4.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
-| Vendored `pluggeasy_modbus` | `0.2.0` | Copied from `pluggeasy-modbus` `0.2.0` release; lives at `custom_components/pluggeasy/vendor/pluggeasy_modbus/`. Refresh with `scripts/vendor.sh`. |
+| This HACS integration | `0.5.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
+| `pluggeasy-modbus` | `0.2.0` | Pip-installed from PyPI; declared in `manifest.json` `requirements`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus). |
 | `modbus-connection[pymodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
 
@@ -29,9 +29,18 @@ The `build_params()` helper (in `_params.py`) is shared between the config-flow 
 
 Backward-compat: entries created before v0.3.0 (no `connection_type` key) default to TCP + Socket on load.
 
-The `pluggeasy_modbus` device library is **vendored** (not listed in `requirements`) so it is always available offline. Only `modbus-connection[tmodbus]` (the transport layer) is a pip requirement.
+The `pluggeasy_modbus` device library is **pip-installed from PyPI** (`pluggeasy-modbus==0.2.0` in `manifest.json` `requirements`), consistent with the Core integration. Home Assistant installs it at runtime.
+
+**Maintenance flow**: change the library → release a new version to PyPI → bump the `pluggeasy-modbus==` pin in both Core and HACS manifests.
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
+
+## What changed in 0.5.0
+
+- **De-vendored `pluggeasy_modbus`** — removed `custom_components/pluggeasy/vendor/` and `scripts/vendor.sh`. The library is now declared as `pluggeasy-modbus==0.2.0` in `manifest.json` `requirements` and installed by HA from PyPI at runtime.
+- **Import sites updated** — all 7 `from .vendor.pluggeasy_modbus import …` replaced with `from pluggeasy_modbus import …` in `coordinator.py`, `sensor.py`, `__init__.py`, `binary_sensor.py`, `select.py`, `climate.py`, `config_flow.py`.
+- **`requirements_dev.txt`** — added `pluggeasy-modbus==0.2.0` for local tooling/type resolution.
+- **No behavior change** — delivery-only refactor; entity logic is unchanged.
 
 ## What changed in 0.4.0
 
