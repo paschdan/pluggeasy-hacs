@@ -12,7 +12,7 @@
 
 | Artifact | Version | Notes |
 | :--- | :--- | :--- |
-| This HACS integration | `0.6.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
+| This HACS integration | `0.6.1` | `custom_components/pluggeasy/manifest.json` `version` field. |
 | `pluggeasy-modbus` | `0.3.0` | Pip-installed from PyPI; declared in `manifest.json` `requirements`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus). |
 | `modbus-connection[pymodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
@@ -34,6 +34,10 @@ The `pluggeasy_modbus` device library is **pip-installed from PyPI** (`pluggeasy
 **Maintenance flow**: change the library → release a new version to PyPI → bump the `pluggeasy-modbus==` pin in both Core and HACS manifests.
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
+
+## What changed in 0.6.1
+
+- **Graceful shutdown**: `coordinator._async_update_data` short-circuits when `hass.is_stopping`, and `__init__` closes the connection on `EVENT_HOMEASSISTANT_STOP`. Eliminates the spurious "Request cancelled outside library" ERROR logged when HA restarts (an in-flight read was being cancelled mid-request). Integration-layer only; no library change.
 
 ## What changed in 0.6.0
 

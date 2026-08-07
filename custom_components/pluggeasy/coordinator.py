@@ -40,6 +40,11 @@ class PluggeasyCoordinator(DataUpdateCoordinator[Pluggeasy]):
 
     async def _async_update_data(self) -> Pluggeasy:
         """Fetch data from the ventilation unit."""
+        # Don't start a Modbus read while Home Assistant is shutting down: the
+        # in-flight request would be cancelled and surface as a spurious
+        # "Request cancelled outside library" error. Return the last data instead.
+        if self.hass.is_stopping:
+            return self.device
         try:
             await self.device.async_update()
         except ModbusError as err:

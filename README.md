@@ -42,6 +42,12 @@ File | Purpose
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
 
+## What's new in 0.6.1
+
+### Graceful shutdown
+
+- No more spurious `Request cancelled outside library` error in the log when Home Assistant restarts. The integration now skips polling once HA is shutting down and closes the Modbus connection cleanly on stop.
+
 ## What's new in 0.6.0
 
 ### Snooze/off fix — climate `off` and select `snooze` now work correctly

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.const import Platform
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.exceptions import ConfigEntryNotReady
 from modbus_connection import ModbusError
 from modbus_connection.pymodbus import ModbusConnection
@@ -41,6 +41,16 @@ async def async_setup_entry(
     """Set up Pluggeasy from a config entry."""
     connection = ModbusConnection(build_params(entry.data), message_spacing=0.03)
     entry.async_on_unload(connection.close)
+
+    # Close the connection cleanly when Home Assistant stops, before HA cancels
+    # the polling task. Otherwise an in-flight read is torn down mid-request and
+    # surfaces as a spurious "Request cancelled outside library" error on restart.
+    async def _async_close_on_stop(_event: object) -> None:
+        await connection.close()
+
+    entry.async_on_unload(
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_close_on_stop)
+    )
 
     # Establish the connection explicitly: the stable modbus-connection release
     # does not auto-connect on the first read (it raises "connection is not
