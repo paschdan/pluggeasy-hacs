@@ -19,7 +19,6 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.const import UnitOfTemperature
-from pluggeasy_modbus import SelectedAirflow
 
 from .entity import PluggeasyEntity
 
@@ -30,20 +29,20 @@ if TYPE_CHECKING:
     from .coordinator import PluggeasyCoordinator
     from .data import PluggeasyConfigEntry
 
-_TO_FAN: dict[SelectedAirflow, str] = {
-    SelectedAirflow.SNOOZE: FAN_OFF,
-    SelectedAirflow.AUTO: FAN_AUTO,
-    SelectedAirflow.LOW: FAN_LOW,
-    SelectedAirflow.MEDIUM: FAN_MEDIUM,
-    SelectedAirflow.NOMINAL: FAN_HIGH,
+_LIB_TO_FAN: dict[str, str] = {
+    "off": FAN_OFF,
+    "auto": FAN_AUTO,
+    "low": FAN_LOW,
+    "medium": FAN_MEDIUM,
+    "high": FAN_HIGH,
 }
 
-_FROM_FAN: dict[str, SelectedAirflow] = {
-    FAN_OFF: SelectedAirflow.SNOOZE,
-    FAN_AUTO: SelectedAirflow.AUTO,
-    FAN_LOW: SelectedAirflow.LOW,
-    FAN_MEDIUM: SelectedAirflow.MEDIUM,
-    FAN_HIGH: SelectedAirflow.NOMINAL,
+_FAN_TO_LIB: dict[str, str] = {
+    FAN_OFF: "off",
+    FAN_AUTO: "auto",
+    FAN_LOW: "low",
+    FAN_MEDIUM: "medium",
+    FAN_HIGH: "high",
 }
 
 
@@ -116,15 +115,13 @@ class PluggeasyClimate(PluggeasyEntity, ClimateEntity):
         """Return the current fan mode."""
         if self._optimistic is not None:
             return self._optimistic
-        val = self.coordinator.data.parameters.selected_airflow  # type: ignore[union-attr]
-        return _TO_FAN.get(val) if val is not None else None
+        eff = self.coordinator.data.effective_airflow_mode()  # type: ignore[union-attr]
+        return _LIB_TO_FAN.get(eff) if eff is not None else None
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set the fan mode."""
-        value = _FROM_FAN[fan_mode]
-        await self.coordinator.data.parameters.write(  # type: ignore[union-attr]
-            "selected_airflow", value
-        )
+        mode = _FAN_TO_LIB[fan_mode]
+        await self.coordinator.data.async_set_airflow_mode(mode)  # type: ignore[union-attr]
         self._optimistic = fan_mode
         self.async_write_ha_state()
         await self.coordinator.async_request_refresh()

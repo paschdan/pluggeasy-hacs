@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from homeassistant.components.select import SelectEntity
-from pluggeasy_modbus import SelectedAirflow
 
 from .entity import PluggeasyEntity
 
@@ -18,6 +17,22 @@ if TYPE_CHECKING:
 
     from .coordinator import PluggeasyCoordinator
     from .data import PluggeasyConfigEntry
+
+_LABEL_TO_MODE: dict[str, str] = {
+    "low": "low",
+    "medium": "medium",
+    "nominal": "high",
+    "auto": "auto",
+    "snooze": "off",
+}
+
+_MODE_TO_LABEL: dict[str, str] = {
+    "off": "snooze",
+    "high": "nominal",
+    "low": "low",
+    "medium": "medium",
+    "auto": "auto",
+}
 
 
 async def async_setup_entry(
@@ -46,14 +61,13 @@ class PluggeasyVentilationModeSelect(PluggeasyEntity, SelectEntity):
         """Return the currently selected option."""
         if self._optimistic is not None:
             return self._optimistic
-        value = self._subsystem.selected_airflow  # type: ignore[union-attr]
-        return value.name.lower() if value is not None else None
+        eff = self.coordinator.data.effective_airflow_mode()  # type: ignore[union-attr]
+        return _MODE_TO_LABEL.get(eff) if eff is not None else None
 
     async def async_select_option(self, option: str) -> None:
         """Select a ventilation mode."""
-        await self.coordinator.data.parameters.write(  # type: ignore[union-attr]
-            "selected_airflow", SelectedAirflow[option.upper()]
-        )
+        lib_mode = _LABEL_TO_MODE[option]
+        await self.coordinator.data.async_set_airflow_mode(lib_mode)  # type: ignore[union-attr]
         self._optimistic = option
         self.async_write_ha_state()
         await self.coordinator.async_request_refresh()

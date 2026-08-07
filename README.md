@@ -27,7 +27,7 @@ File | Purpose
 
 | Platform | Count | Description |
 | :--- | :---: | :--- |
-| `climate` | 1 | `climate.pluggeasy_climate` — HVACMode.FAN_ONLY; fan modes: off / auto / low / medium / high (mapped to selected_airflow); read-only supply-air temperature shown as the climate temperature (no writable setpoint). Coexists with `select.pluggeasy_ventilation_mode`. |
+| `climate` | 1 | `climate.pluggeasy_climate` — HVACMode.FAN_ONLY; fan modes: off / auto / low / medium / high (routed via library API); **`off` = ~1-hour Snooze that auto-resumes** (not permanent off — the unit will return to the previous speed after ~1 h); read-only supply-air temperature shown as the climate temperature (no writable setpoint). Coexists with `select.pluggeasy_ventilation_mode`. |
 | `binary_sensor` | 14 | Alarms, sensor faults, fan faults, bypass/boost status; **new in 0.4.0**: Bypass Valve (open/closed), Summer Mode (mirrors the summer switch), Preheat (defrost pre-heater active) |
 | `sensor` | 26 | Air temperatures, humidity, motor voltages/RPM, VOC, enum status sensors (actual working mode, defrost status, communication error, bypass damper position), parameters; **new in 0.4.0**: Supply Air Level (%), Return Air Level (%) |
 | `switch` | 5 | Bypass, summer mode, boost, snooze, allow automatic bypass |
@@ -41,6 +41,26 @@ File | Purpose
 3. Install **Pluggeasy** from HACS.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
+
+## What's new in 0.6.0
+
+### Snooze/off fix — climate `off` and select `snooze` now work correctly
+
+**Bug fixed**: Setting climate `off` or select `snooze` previously wrote `selected_airflow = Snooze` (register value 4), which the device rejects — the register only accepts 0–3. The unit would snap back to the prior mode.
+
+**Root cause**: Snooze is controlled by a dedicated coil (`snooze_mode`, CL18), not by the airflow register.
+
+**Fix**: All airflow writes now go through the `pluggeasy-modbus` 0.3.0 library API:
+- `async_set_airflow_mode("off")` → writes the snooze coil (leaves airflow register unchanged)
+- `async_set_airflow_mode("low"/"medium"/"high"/"auto")` → writes the airflow register **and** clears the snooze coil
+- `effective_airflow_mode()` → returns `"off"` when `actual_working_mode == Snooze`, else the selected speed
+
+> **Important**: climate `off` = **~1-hour Snooze that auto-resumes** (not a permanent off). After ~1 hour the device automatically clears the snooze coil and resumes ventilation at the previously selected speed. The entity flipping back to a running speed after ~1 h is expected behavior.
+
+**Changes**:
+- `climate.py` — `fan_mode` reads via `effective_airflow_mode()`; `async_set_fan_mode` calls `async_set_airflow_mode()`; old `_TO_FAN`/`_FROM_FAN` dicts replaced with library-mode ↔ HA-constant maps.
+- `select.py` — `current_option` reads via `effective_airflow_mode()` (maps `"off"→"snooze"`, `"high"→"nominal"`); `async_select_option` calls `async_set_airflow_mode()` (maps `"snooze"→"off"`, `"nominal"→"high"`).
+- `manifest.json` — `pluggeasy-modbus` pin bumped to `0.3.0`; version `0.6.0`.
 
 ## What's new in 0.5.0
 

@@ -12,8 +12,8 @@
 
 | Artifact | Version | Notes |
 | :--- | :--- | :--- |
-| This HACS integration | `0.5.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
-| `pluggeasy-modbus` | `0.2.0` | Pip-installed from PyPI; declared in `manifest.json` `requirements`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus). |
+| This HACS integration | `0.6.0` | `custom_components/pluggeasy/manifest.json` `version` field. |
+| `pluggeasy-modbus` | `0.3.0` | Pip-installed from PyPI; declared in `manifest.json` `requirements`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus). |
 | `modbus-connection[pymodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
 
@@ -29,11 +29,19 @@ The `build_params()` helper (in `_params.py`) is shared between the config-flow 
 
 Backward-compat: entries created before v0.3.0 (no `connection_type` key) default to TCP + Socket on load.
 
-The `pluggeasy_modbus` device library is **pip-installed from PyPI** (`pluggeasy-modbus==0.2.0` in `manifest.json` `requirements`), consistent with the Core integration. Home Assistant installs it at runtime.
+The `pluggeasy_modbus` device library is **pip-installed from PyPI** (`pluggeasy-modbus==0.3.0` in `manifest.json` `requirements`), consistent with the Core integration. Home Assistant installs it at runtime.
 
 **Maintenance flow**: change the library → release a new version to PyPI → bump the `pluggeasy-modbus==` pin in both Core and HACS manifests.
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
+
+## What changed in 0.6.0
+
+- **`climate.py`** — replaced `_TO_FAN`/`_FROM_FAN` dicts (which wrote `selected_airflow` directly) with `_LIB_TO_FAN`/`_FAN_TO_LIB` maps (library mode strings ↔ HA fan constants). `fan_mode` property now calls `effective_airflow_mode()` on the device; `async_set_fan_mode` calls `async_set_airflow_mode()`. Removed `SelectedAirflow` import.
+- **`select.py`** — replaced direct `parameters.write("selected_airflow", SelectedAirflow[...])` with `async_set_airflow_mode()`; `current_option` now calls `effective_airflow_mode()` mapped through `_MODE_TO_LABEL` (`"off"→"snooze"`, `"high"→"nominal"`). Added `_LABEL_TO_MODE`/`_MODE_TO_LABEL` translation dicts. Removed `SelectedAirflow` import.
+- **`manifest.json`** — `pluggeasy-modbus` pin bumped `0.2.0→0.3.0`; version `0.5.0→0.6.0`.
+- **`requirements_dev.txt`** — `pluggeasy-modbus` bumped to `0.3.0`.
+- **Fix**: climate `off` and select `snooze` now correctly engage the snooze coil via the library. **Note**: `off` = ~1-hour Snooze that auto-resumes — the entity flipping back to a running speed after ~1 h is expected behavior.
 
 ## What changed in 0.5.0
 
