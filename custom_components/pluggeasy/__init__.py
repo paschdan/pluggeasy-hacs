@@ -65,7 +65,7 @@ async def async_setup_entry(
     unit = connection.for_unit(int(entry.data[CONF_UNIT_ID]))
     device = Pluggeasy(unit)
 
-    coordinator = PluggeasyCoordinator(hass, entry, device)
+    coordinator = PluggeasyCoordinator(hass, entry, device, connection)
     await coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = PluggeasyData(coordinator=coordinator)

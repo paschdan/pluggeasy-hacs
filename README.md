@@ -42,6 +42,10 @@ File | Purpose
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration → Pluggeasy**.
 
+## What's new in 0.6.2
+
+- **Auto-reconnect**: the integration now re-establishes the Modbus connection automatically after a network/gateway blip, so it recovers within one poll cycle instead of needing a manual reload.
+
 ## What's new in 0.6.1
 
 ### Graceful shutdown

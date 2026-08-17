@@ -35,6 +35,10 @@ The `pluggeasy_modbus` device library is **pip-installed from PyPI** (`pluggeasy
 
 For the HA core integration that uses the shared `modbus_connection` component, see [`pluggeasy-core`](https://github.com/paschdan/pluggeasy-core).
 
+## What changed in 0.6.2
+
+- **Auto-reconnect**: `coordinator._async_update_data` now calls `connection.connect()` before each poll (no-op when connected; rebuilds the client after a drop). The connection is passed into the coordinator. Fixes the case where a dropped link left the integration failing with "connection is not established" until a manual reload. Integration-layer only.
+
 ## What changed in 0.6.1
 
 - **Graceful shutdown**: `coordinator._async_update_data` short-circuits when `hass.is_stopping`, and `__init__` closes the connection on `EVENT_HOMEASSISTANT_STOP`. Eliminates the spurious "Request cancelled outside library" ERROR logged when HA restarts (an in-flight read was being cancelled mid-request). Integration-layer only; no library change.

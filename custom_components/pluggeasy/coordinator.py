@@ -15,6 +15,7 @@ from .const import DOMAIN, LOGGER, SCAN_INTERVAL
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from modbus_connection.pymodbus import ModbusConnection
 
     from .data import PluggeasyConfigEntry
 
@@ -27,6 +28,7 @@ class PluggeasyCoordinator(DataUpdateCoordinator[Pluggeasy]):
         hass: HomeAssistant,
         entry: PluggeasyConfigEntry,
         device: Pluggeasy,
+        connection: ModbusConnection,
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -37,6 +39,7 @@ class PluggeasyCoordinator(DataUpdateCoordinator[Pluggeasy]):
             update_interval=SCAN_INTERVAL,
         )
         self.device = device
+        self.connection = connection
 
     async def _async_update_data(self) -> Pluggeasy:
         """Fetch data from the ventilation unit."""
@@ -46,6 +49,10 @@ class PluggeasyCoordinator(DataUpdateCoordinator[Pluggeasy]):
         if self.hass.is_stopping:
             return self.device
         try:
+            # connect() is a no-op when already connected and rebuilds the client
+            # after a dropped link, so the integration self-heals after a network
+            # blip instead of staying dead until a manual reload.
+            await self.connection.connect()
             await self.device.async_update()
         except ModbusError as err:
             msg = f"Error communicating with Pluggeasy: {err}"
