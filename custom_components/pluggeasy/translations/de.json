@@ -1,0 +1,144 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Verbindungsart wählen",
+                "description": "Wählen Sie, wie Ihre Pluggeasy-Anlage angebunden ist.",
+                "menu_options": {
+                    "tcp": "TCP / Ethernet",
+                    "serial": "Seriell (RS-485)"
+                }
+            },
+            "tcp": {
+                "title": "TCP-Verbindung",
+                "description": "TCP-Verbindung zur Pluggeasy-Anlage konfigurieren.",
+                "data": {
+                    "host": "Host",
+                    "port": "Port",
+                    "framer": "Framer",
+                    "unit_id": "Geräteadresse"
+                },
+                "data_description": {
+                    "host": "IP-Adresse oder Hostname der Anlage bzw. des Gateways.",
+                    "port": "Modbus-TCP-Port (Standard 8899 für TCP-Seriell-Gateways; 502 für natives Modbus TCP).",
+                    "framer": "Modbus-Framer: 'socket' für natives Modbus TCP, 'rtu' für RTU-over-TCP-Gateways.",
+                    "unit_id": "Modbus-Stationsadresse / Slave-ID (Standard 1)."
+                }
+            },
+            "serial": {
+                "title": "Serielle Verbindung",
+                "description": "RS-485-Seriellanschluss zur Pluggeasy-Anlage konfigurieren.",
+                "data": {
+                    "device": "Serielles Gerät",
+                    "baudrate": "Baudrate",
+                    "parity": "Parität",
+                    "bytesize": "Datenbits",
+                    "stopbits": "Stoppbits",
+                    "framer": "Framer",
+                    "unit_id": "Geräteadresse"
+                },
+                "data_description": {
+                    "device": "Serieller Gerätepfad, z. B. /dev/ttyUSB0.",
+                    "baudrate": "Baudrate (Standard 19200 laut Pluggeasy-Datenblatt).",
+                    "parity": "Parität: Keine (N), Gerade (E) oder Ungerade (O). Standard: Gerade.",
+                    "bytesize": "Anzahl Datenbits (Standard 8).",
+                    "stopbits": "Anzahl Stoppbits (Standard 1).",
+                    "framer": "Modbus-Framer: 'rtu' (Standard) oder 'ascii'.",
+                    "unit_id": "Modbus-Stationsadresse / Slave-ID (Standard 1)."
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Verbindung zur Pluggeasy-Anlage fehlgeschlagen. Host, Port und Geräteadresse prüfen."
+        },
+        "abort": {
+            "already_configured": "Diese Pluggeasy-Anlage ist bereits konfiguriert."
+        }
+    },
+    "entity": {
+        "climate": {
+            "climate": {
+                "name": "Klima"
+            }
+        },
+        "button": {
+            "controls_reset_filter_alarm": {
+                "name": "Filteralarm zurücksetzen"
+            }
+        },
+        "select": {
+            "ventilation_mode": {
+                "name": "Lüftungsstufe",
+                "state": {
+                    "low": "Stufe 1 (Niedrig)",
+                    "medium": "Stufe 2 (Mittel)",
+                    "nominal": "Stufe 3 (Nenn)",
+                    "auto": "Automatik",
+                    "snooze": "Pause (~1 Std.)"
+                }
+            }
+        },
+        "sensor": {
+            "measurements_actual_working_mode": {
+                "name": "Aktueller Betriebsmodus",
+                "state": {
+                    "snooze": "Pause",
+                    "low": "Stufe 1 (Niedrig)",
+                    "medium": "Stufe 2 (Mittel)",
+                    "high": "Stufe 3 (Hoch)",
+                    "boost": "Boost",
+                    "auto_humidity": "Automatik (Feuchte)",
+                    "auto_voc": "Automatik (VOC)",
+                    "auto_0_10v": "Automatik (0–10 V)",
+                    "boost_in_auto": "Boost im Automatikbetrieb",
+                    "weekly_1": "Automatik (Wochenprogramm 1)",
+                    "weekly_2": "Automatik (Wochenprogramm 2)",
+                    "weekly_3": "Automatik (Wochenprogramm 3)",
+                    "weekly_4": "Automatik (Wochenprogramm 4)"
+                }
+            },
+            "measurements_defrost_status": {
+                "name": "Abtaustatus",
+                "state": {
+                    "not_active": "Nicht aktiv",
+                    "fireplace_defrost": "Kaminabtauung",
+                    "pre_heater": "Vorheizer aktiv",
+                    "unbalanced_airflows": "Ungleiche Luftmengen"
+                }
+            },
+            "measurements_communication_error": {
+                "name": "Kommunikationsfehler",
+                "state": {
+                    "no_error": "Kein Fehler",
+                    "remote_controller": "Fernbedienung",
+                    "modbus_rtu": "Modbus RTU"
+                }
+            },
+            "measurements_bypass_damper_position": {
+                "name": "Bypassklappe",
+                "state": {
+                    "closed": "Geschlossen",
+                    "open": "Geöffnet",
+                    "error": "Fehler"
+                }
+            },
+            "measurements_supply_air_level": {
+                "name": "Zuluftlevel"
+            },
+            "measurements_return_air_level": {
+                "name": "Abluftlevel"
+            }
+        },
+        "binary_sensor": {
+            "measurements_bypass_valve": {
+                "name": "Bypassklappe"
+            },
+            "controls_summer_mode": {
+                "name": "Sommerbetrieb"
+            },
+            "measurements_preheat": {
+                "name": "Vorheizer"
+            }
+        }
+    }
+}
