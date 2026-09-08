@@ -91,10 +91,10 @@
                     "auto_voc": "Auto (VOC)",
                     "auto_0_10v": "Auto (0-10 V)",
                     "boost_in_auto": "Boost in Auto",
-                    "weekly_1": "Weekly 1",
-                    "weekly_2": "Weekly 2",
-                    "weekly_3": "Weekly 3",
-                    "weekly_4": "Weekly 4"
+                    "weekly_1": "Auto (Weekly 1)",
+                    "weekly_2": "Auto (Weekly 2)",
+                    "weekly_3": "Auto (Weekly 3)",
+                    "weekly_4": "Auto (Weekly 4)"
                 }
             },
             "measurements_defrost_status": {
