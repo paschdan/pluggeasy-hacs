@@ -34,6 +34,18 @@ File | Purpose
 | `select` | 1 | Ventilation speed setpoint (`select.pluggeasy_ventilation_mode`): low / medium / nominal / auto / snooze |
 | `button` | 1 | Reset filter alarm |
 
+### Unknown ventilation setpoints
+
+Some devices report an undocumented `selected_airflow` value (for example, `6`).
+The ventilation-mode select and climate fan mode remain unknown rather than
+guessing a speed or changing the device. The climate action uses the separate
+actual-working-mode reading: weekly programs and other running modes report
+`fan`, and Snooze reports `off`. If neither reading is known, the action is unknown,
+not `off`. The library warning remains useful for diagnosing the undocumented value.
+
+VOC continues to use `ppm`, without importing Home Assistant's deprecated
+concentration constant. Home Assistant 2026.6.4 remains supported.
+
 ## Installation
 
 1. Install [HACS](https://hacs.xyz) in your Home Assistant instance.
@@ -172,6 +184,7 @@ Open in Visual Studio Code devcontainer (recommended):
 scripts/setup   # install dependencies
 scripts/develop # start Home Assistant with the integration loaded
 scripts/lint    # run ruff format + check
+python -m unittest discover -s tests # run regression tests
 ```
 
 ## Device library
