@@ -46,6 +46,14 @@ not `off`. The library warning remains useful for diagnosing the undocumented va
 VOC continues to use `ppm`, without importing Home Assistant's deprecated
 concentration constant. Home Assistant 2026.6.4 remains supported.
 
+### Modbus dependency compatibility
+
+The integration uses `modbus-connection[pymodbus]>=4.12.7,<5`, which includes the
+version required by current Home Assistant validation. The Pluggeasy device
+library stays at `0.3.0`. Existing TCP and serial settings are preserved; explicit
+RTU/ASCII-over-TCP framing remains supported but is deprecated by the upstream
+connection library.
+
 ## Installation
 
 1. Install [HACS](https://hacs.xyz) in your Home Assistant instance.

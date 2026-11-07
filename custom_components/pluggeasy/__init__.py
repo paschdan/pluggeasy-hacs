@@ -52,10 +52,8 @@ async def async_setup_entry(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_close_on_stop)
     )
 
-    # Establish the connection explicitly: the stable modbus-connection release
-    # does not auto-connect on the first read (it raises "connection is not
-    # established"), so borrow the unit only after connect() succeeds. A failure
-    # here means the device is unreachable right now -> let HA retry setup later.
+    # Connect explicitly so an unreachable device triggers HA's setup retry
+    # before the first poll, even though v4 also connects on individual reads.
     try:
         await connection.connect()
     except (ModbusError, OSError) as err:
