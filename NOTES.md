@@ -14,7 +14,7 @@
 | :--- | :--- | :--- |
 | This HACS integration | `0.6.1` | `custom_components/pluggeasy/manifest.json` `version` field. |
 | `pluggeasy-modbus` | `0.3.0` | Pip-installed from PyPI; declared in `manifest.json` `requirements`. See [paschdan/pluggeasy-modbus](https://github.com/paschdan/pluggeasy-modbus). |
-| `modbus-connection[pymodbus]` | `>=3.9,<4` | Listed in `manifest.json` `requirements`; installed by HA at runtime. |
+| `modbus-connection[pymodbus]` | `>=4.12.7,<5` | Compatible with Home Assistant's current dependency; installed by HA at runtime. |
 | Minimum Home Assistant | `2026.6.4` | Declared in `hacs.json`. |
 
 ## Architecture note

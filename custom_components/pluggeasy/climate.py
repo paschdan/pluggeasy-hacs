@@ -19,6 +19,7 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.const import UnitOfTemperature
+from pluggeasy_modbus import ActualWorkingMode
 
 from .entity import PluggeasyEntity
 
@@ -87,10 +88,22 @@ class PluggeasyClimate(PluggeasyEntity, ClimateEntity):
         return HVACMode.FAN_ONLY
 
     @property
-    def hvac_action(self) -> HVACAction:
-        """Return the current HVAC action."""
+    def hvac_action(self) -> HVACAction | None:
+        """Return the actual action, even when the selected airflow is unknown."""
+        data = self.coordinator.data
+        if data is not None and data.measurements is not None:
+            mode = data.measurements.actual_working_mode
+            if isinstance(mode, ActualWorkingMode):
+                return (
+                    HVACAction.OFF
+                    if mode == ActualWorkingMode.SNOOZE
+                    else HVACAction.FAN
+                )
+
         fm = self.fan_mode
-        if fm is None or fm == FAN_OFF:
+        if fm is None:
+            return None
+        if fm == FAN_OFF:
             return HVACAction.OFF
         return HVACAction.FAN
 
@@ -115,7 +128,10 @@ class PluggeasyClimate(PluggeasyEntity, ClimateEntity):
         """Return the current fan mode."""
         if self._optimistic is not None:
             return self._optimistic
-        eff = self.coordinator.data.effective_airflow_mode()  # type: ignore[union-attr]
+        data = self.coordinator.data
+        if data is None:
+            return None
+        eff = data.effective_airflow_mode()
         return _LIB_TO_FAN.get(eff) if eff is not None else None
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:

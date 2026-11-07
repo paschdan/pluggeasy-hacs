@@ -16,7 +16,6 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     PERCENTAGE,
     EntityCategory,
     UnitOfElectricPotential,
@@ -30,6 +29,14 @@ from pluggeasy_modbus import (
 )
 
 from .entity import PluggeasyEntity
+
+try:
+    from homeassistant.const import UnitOfRatio
+except ImportError:
+    # UnitOfRatio was introduced after our minimum supported HA version.
+    _PARTS_PER_MILLION = "ppm"
+else:
+    _PARTS_PER_MILLION = UnitOfRatio.PARTS_PER_MILLION
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -197,7 +204,7 @@ DESCRIPTIONS: tuple[PluggeasySensorDescription, ...] = (
         component="measurements",
         attribute="voc",
         device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS_PARTS,
-        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        native_unit_of_measurement=_PARTS_PER_MILLION,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     # Diagnostic enum sensor

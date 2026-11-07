@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "8116aa3b92911021fc5c579023a5656a246f7dc6",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "pluggeasy",
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "custom_components/pluggeasy/manifest.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  }
+}

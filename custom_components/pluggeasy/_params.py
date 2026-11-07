@@ -63,11 +63,16 @@ def build_params(data: Mapping[str, Any]) -> ModbusParams:
     """
     connection_type = data.get(CONF_CONNECTION_TYPE, "tcp")
     if connection_type == "tcp":
-        return ModbusTcpParams(
-            host=data[CONF_HOST],
-            port=int(data.get(CONF_PORT, DEFAULT_PORT)),
-            framer=data.get(CONF_FRAMER, DEFAULT_TCP_FRAMER),
-        )
+        params = {
+            "host": data[CONF_HOST],
+            "port": int(data.get(CONF_PORT, DEFAULT_PORT)),
+        }
+        framer = data.get(CONF_FRAMER, DEFAULT_TCP_FRAMER)
+        # v4 defaults to socket framing and deprecates an explicit argument.
+        # Preserve RTU/ASCII-over-TCP for existing gateway configurations.
+        if framer != DEFAULT_TCP_FRAMER:
+            params["framer"] = framer
+        return ModbusTcpParams(**params)
     return ModbusSerialParams(
         device=data[CONF_DEVICE],
         baudrate=int(data.get(CONF_BAUDRATE, DEFAULT_BAUDRATE)),
